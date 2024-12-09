@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "199489973530",
+    "project_id": "pruebatecnica-e2115",
+    "storage_bucket": "pruebatecnica-e2115.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199489973530:android:e39531921378573fefd0a3",
+        "android_client_info": {
+          "package_name": "com.example.pruebatecnica"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199489973530-7edv6nul7desmved6rm33a561kof3tjq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pruebatecnica",
+            "certificate_hash": "2d901496031350d6d7dc8203fabd7833a288ba5d"
+          }
+        },
+        {
+          "client_id": "199489973530-260n3b9ejdgdkevmk4osegqb7baq8sl9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1rDa3cn6-eGsxDTj9J5xwsU96dA4iOtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199489973530-260n3b9ejdgdkevmk4osegqb7baq8sl9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
