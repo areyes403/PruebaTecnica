@@ -47,7 +47,7 @@ class SplashFragment : Fragment() {
                 }
                 is ResponseState.Success->{
                     Log.i("apiResponse","Success")
-                    findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+                    findNavController().navigate(R.id.action_splashFragment_to_organizationsFragment)
                 }
             }
         }

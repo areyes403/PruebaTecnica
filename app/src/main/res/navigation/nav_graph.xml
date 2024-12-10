@@ -17,10 +17,22 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out"/>
+        <action
+            android:id="@+id/action_splashFragment_to_organizationsFragment"
+            app:destination="@id/organizationsFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.pruebatecnica.auth_feature.presenter.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" />
+    <fragment
+        android:id="@+id/organizationsFragment"
+        android:name="com.example.pruebatecnica.organization_feature.presenter.organizations.OrganizationsFragment"
+        android:label="fragment_organizations"
+        tools:layout="@layout/fragment_organizations" />
 </navigation>

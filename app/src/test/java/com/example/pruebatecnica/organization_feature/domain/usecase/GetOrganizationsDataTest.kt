@@ -53,9 +53,10 @@ class GetOrganizationsDataTest{
     @Test
     fun `when the repository returns any error then invoke returns error`() = runBlocking {
         val expectedCode=400
-        val expectedMessage="Bad Request"
 
-        coEvery { organizationRepository.getData() } returns ResponseState.Error("Bad Request", 400)
+        val expectedResponse=ResponseState.Error("Bad Request", 400)
+
+        coEvery { organizationRepository.getData() } returns expectedResponse
 
         val result = getOrganizationsData()
 
@@ -65,7 +66,7 @@ class GetOrganizationsDataTest{
 
         val errorResult = result as ResponseState.Error
 
-        assert(errorResult.msg == expectedMessage)
+        assert(errorResult.msg == expectedResponse.msg)
 
         assert(errorResult.code == expectedCode)
     }

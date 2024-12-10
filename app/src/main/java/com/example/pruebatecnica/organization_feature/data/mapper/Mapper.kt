@@ -1,6 +1,7 @@
 package com.example.pruebatecnica.organization_feature.data.mapper
 
 import com.example.pruebatecnica.organization_feature.data.local.entities.OrganizationEntity
+import com.example.pruebatecnica.organization_feature.data.model.OrganizationExpandable
 import com.example.pruebatecnica.organization_feature.data.remote.dto.ApiResponseDto
 import com.example.pruebatecnica.organization_feature.domain.model.Organization
 import com.example.pruebatecnica.organization_feature.domain.model.OrganizationData
@@ -58,6 +59,22 @@ fun OrganizationEntity.toOrganization() = Organization(
 
 fun List<Organization>.toOrganizationEntities() = this.map {
     OrganizationEntity(
+        id = it.id,
+        dateInsert=it.dateInsert,
+        slug =it. slug,
+        columns = it.columns,
+        fact = it.fact,
+        organization = it.organization,
+        resource = it.resource,
+        url = it.resource,
+        operations = it.operations,
+        dataset = it.dataset,
+        createdAt = it.createdAt
+    )
+}
+
+fun List<Organization>.toOrganizationExpandable() = this.map {
+    OrganizationExpandable(
         id = it.id,
         dateInsert=it.dateInsert,
         slug =it. slug,

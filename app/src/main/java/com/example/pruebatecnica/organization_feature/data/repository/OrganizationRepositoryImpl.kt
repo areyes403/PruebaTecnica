@@ -10,6 +10,8 @@ import com.example.pruebatecnica.organization_feature.data.remote.OrganizationSe
 import com.example.pruebatecnica.organization_feature.domain.model.Organization
 import com.example.pruebatecnica.organization_feature.domain.model.OrganizationData
 import com.example.pruebatecnica.organization_feature.domain.repository.OrganizationRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 class OrganizationRepositoryImpl(
     private val service:OrganizationService,
@@ -23,4 +25,6 @@ class OrganizationRepositoryImpl(
     override suspend fun insertOrganizations(organizations: List<Organization>) {
         organizationDao.insertAll(organizations = organizations.toOrganizationEntities())
     }
+
+    override suspend fun findPaginatedOrganizations(offset: Int): List<OrganizationEntity> = organizationDao.getListPaged(offset=offset)
 }
