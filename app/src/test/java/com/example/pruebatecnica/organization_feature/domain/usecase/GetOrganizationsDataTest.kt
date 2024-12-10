@@ -25,14 +25,30 @@ class GetOrganizationsDataTest{
     }
 
     @Test
-    fun `when the api doesnt return anything then get values from database`() = runBlocking {
+    fun `when the repository returns success then invoke returns success`() = runBlocking {
 //        //Given
-//        coEvery { organizationRepository.getData() } //returns ResponseState.Success()
+        coEvery { organizationRepository.getData() } returns ResponseState.Success(Unit)
 //
 //        //When
-//        getOrganizationsData()
+        val result = getOrganizationsData()
 //
-//        //Then
-//        coVerify(exactly = 1) { organizationRepository.getData() }
+// Then
+        coVerify(exactly = 1) { organizationRepository.getData() } // Verifica que el método sea llamado
+        assert(result is ResponseState.Success) // Asegúrate de que el resultado es de tipo Success
+
+    }
+
+    @Test
+    fun `when the repository returns an error then invoke returns error`() = runBlocking {
+        // Given
+        coEvery { organizationRepository.getData() } returns ResponseState.Error("Error", 500)
+
+        // When
+        val result = getOrganizationsData()
+
+        // Then
+        coVerify(exactly = 1) { organizationRepository.getData() } // Verifica que el método sea llamado
+        assert(result is ResponseState.Error) // Asegúrate de que el resultado es de tipo Error
+        assert((result as ResponseState.Error).msg == "Error") // Verifica el mensaje del error
     }
 }
