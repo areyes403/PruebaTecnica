@@ -1,6 +1,8 @@
 package com.example.pruebatecnica.organization_feature.domain.usecase
 
 import com.example.pruebatecnica.core_feature.data.model.ResponseState
+import com.example.pruebatecnica.organization_feature.domain.model.OrganizationData
+import com.example.pruebatecnica.organization_feature.domain.model.Pagination
 import com.example.pruebatecnica.organization_feature.domain.repository.OrganizationRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -25,30 +27,46 @@ class GetOrganizationsDataTest{
     }
 
     @Test
-    fun `when the repository returns success then invoke returns success`() = runBlocking {
-//        //Given
-        coEvery { organizationRepository.getData() } returns ResponseState.Success(Unit)
-//
-//        //When
-        val result = getOrganizationsData()
-//
-// Then
-        coVerify(exactly = 1) { organizationRepository.getData() } // Verifica que el método sea llamado
-        assert(result is ResponseState.Success) // Asegúrate de que el resultado es de tipo Success
-
-    }
-
-    @Test
-    fun `when the repository returns an error then invoke returns error`() = runBlocking {
+    fun `when the repository returns success then invoke returns success with correct data`() = runBlocking {
         // Given
-        coEvery { organizationRepository.getData() } returns ResponseState.Error("Error", 500)
+        val expectedData = OrganizationData(
+            pagination = Pagination(
+                pageSize = 0,
+                page = 0,
+                total = 0
+            ),
+            organizations = listOf()
+        )
+
+        coEvery { organizationRepository.getData() } returns ResponseState.Success(expectedData)
 
         // When
         val result = getOrganizationsData()
 
         // Then
-        coVerify(exactly = 1) { organizationRepository.getData() } // Verifica que el método sea llamado
-        assert(result is ResponseState.Error) // Asegúrate de que el resultado es de tipo Error
-        assert((result as ResponseState.Error).msg == "Error") // Verifica el mensaje del error
+        coVerify(exactly = 1) { organizationRepository.getData() }
+        assert(result is ResponseState.Success)
+        val successResult = result as ResponseState.Success
+        assert(successResult.data == expectedData)
+    }
+
+    @Test
+    fun `when the repository returns any error then invoke returns error`() = runBlocking {
+        val expectedCode=400
+        val expectedMessage="Bad Request"
+
+        coEvery { organizationRepository.getData() } returns ResponseState.Error("Bad Request", 400)
+
+        val result = getOrganizationsData()
+
+        coVerify(exactly = 1) { organizationRepository.getData() }
+
+        assert(result is ResponseState.Error)
+
+        val errorResult = result as ResponseState.Error
+
+        assert(errorResult.msg == expectedMessage)
+
+        assert(errorResult.code == expectedCode)
     }
 }
