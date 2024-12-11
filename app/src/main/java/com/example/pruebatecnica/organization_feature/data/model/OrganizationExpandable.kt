@@ -1,5 +1,6 @@
 package com.example.pruebatecnica.organization_feature.data.model
 
+
 data class OrganizationExpandable (
     val id: String,
     val dateInsert: String,
@@ -11,6 +12,6 @@ data class OrganizationExpandable (
     val url: String,
     val operations: String,
     val dataset: String,
-    val createdAt: Long,
+    val createdAt: String,
     var isExpanded:Boolean=false
 )
