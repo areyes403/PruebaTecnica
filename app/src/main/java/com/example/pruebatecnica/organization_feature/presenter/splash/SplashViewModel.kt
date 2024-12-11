@@ -1,4 +1,4 @@
-package com.example.pruebatecnica.auth_feature.presenter.splash
+package com.example.pruebatecnica.organization_feature.presenter.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

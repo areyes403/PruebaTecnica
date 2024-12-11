@@ -1,4 +1,4 @@
-package com.example.pruebatecnica.auth_feature.presenter.splash
+package com.example.pruebatecnica.organization_feature.presenter.splash
 
 import android.os.Bundle
 import android.util.Log

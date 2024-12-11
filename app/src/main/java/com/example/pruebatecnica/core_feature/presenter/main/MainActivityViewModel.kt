@@ -2,6 +2,7 @@ package com.example.pruebatecnica.core_feature.presenter.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.pruebatecnica.auth_feature.domain.model.AuthSession
 import com.example.pruebatecnica.auth_feature.domain.usecase.ObserveSessionToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ class MainActivityViewModel @Inject constructor(
     private val observeSessionTokenUseCase: ObserveSessionToken
 ):ViewModel() {
 
-    private val _tokenState= MutableStateFlow<String?>(null)
+    private val _tokenState= MutableStateFlow<AuthSession?>(null)
     val tokenState=_tokenState.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000L),

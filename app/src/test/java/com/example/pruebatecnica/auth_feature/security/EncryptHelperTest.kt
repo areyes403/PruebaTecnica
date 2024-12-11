@@ -1,21 +1,25 @@
 package com.example.pruebatecnica.auth_feature.security
 
-import com.example.pruebatecnica.auth_feature.security.EncryptHelper.aesDecrypt
-import com.example.pruebatecnica.auth_feature.security.EncryptHelper.aesEncrypt
-import com.example.pruebatecnica.auth_feature.security.EncryptHelper.generateAESKey
 import org.junit.Assert.*
 import org.junit.Test
+import javax.crypto.KeyGenerator
 
 class EncryptHelperTest{
     @Test
     fun `Given text when encrypted and decrypted should return original text`() {
         val originalText = "Hello Kotlin AES Encryption!"
-        val secretKey = generateAESKey(256)
+        // Generate a secret key
+        val keyGenerator = KeyGenerator.getInstance("AES")
+        keyGenerator.init(256)
+        val secretKey = keyGenerator.generateKey()
 
-        val encryptedData = aesEncrypt(originalText.toByteArray(), secretKey)
-        val decryptedData = aesDecrypt(encryptedData, secretKey)
-        val decryptedText = String(decryptedData)
+        // Encriptamos el texto
+        val encryptedData = EncryptHelper.encrypt(originalText, secretKey)
 
-        assertEquals(originalText, decryptedText, "The decrypted text does not match the original")
+        // Desencriptamos los datos
+        val decryptedData = EncryptHelper.decrypt(encryptedData, secretKey)
+
+        // Comprobamos que el texto desencriptado sea igual al original
+        assertEquals(originalText, decryptedData, "The decrypted text does not match the original")
     }
 }

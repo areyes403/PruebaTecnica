@@ -7,23 +7,17 @@ import javax.crypto.spec.IvParameterSpec
 
 object EncryptHelper {
 
-    fun generateAESKey(keySize: Int = 256): SecretKey {
-        val keyGenerator = KeyGenerator.getInstance("AES")
-        keyGenerator.init(keySize)
-        return keyGenerator.generateKey()
+    fun encrypt(plainText: String, secretKey: SecretKey): ByteArray {
+        val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        return cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
     }
 
-    fun aesEncrypt(data: ByteArray, secretKey: SecretKey): ByteArray {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val ivParameterSpec = IvParameterSpec(ByteArray(16)) // Use a secure IV in production
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
-        return cipher.doFinal(data)
+    fun decrypt(cipherText: ByteArray, secretKey: SecretKey): String {
+        val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+        cipher.init(Cipher.DECRYPT_MODE, secretKey)
+        val decryptedData = cipher.doFinal(cipherText)
+        return String(decryptedData, Charsets.UTF_8)
     }
 
-    fun aesDecrypt(encryptedData: ByteArray, secretKey: SecretKey): ByteArray {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val ivParameterSpec = IvParameterSpec(ByteArray(16)) // Use the same IV as used in encryption
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec)
-        return cipher.doFinal(encryptedData)
-    }
 }

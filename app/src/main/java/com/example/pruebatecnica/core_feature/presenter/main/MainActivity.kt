@@ -11,10 +11,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.pruebatecnica.R
+import com.example.pruebatecnica.auth_feature.security.CryptoManager
+import com.example.pruebatecnica.auth_feature.security.JwtUtil.getAuthSession
 import com.example.pruebatecnica.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -22,7 +27,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMainBinding
     private lateinit var navController: NavController
 
-    //private val viewModel by viewModels<MainActivityViewModel>()
+    private val viewModel by viewModels<MainActivityViewModel>()
+
+    private val TAG="MAIN"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,16 +44,17 @@ class MainActivity : AppCompatActivity() {
         }
         val navHost= supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         navController = navHost.navController
-//        observers()
+        observers()
     }
 
-//    private fun observers() {
-//        viewModel.tokenState.onEach { token->
-//            if (token==null){
-//                Log.i(TAG,"Token: $")
-//            }else{
-//                Log.i(TAG,"Token: $token")
-//            }
-//        }.launchIn(lifecycleScope)
-//    }
+    private fun observers() {
+        viewModel.tokenState.onEach { data->
+            if (data==null){
+                Log.i(TAG,"Token: $")
+
+            }else{
+                Log.i(TAG,"Token: $data")
+            }
+        }.launchIn(lifecycleScope)
+    }
 }

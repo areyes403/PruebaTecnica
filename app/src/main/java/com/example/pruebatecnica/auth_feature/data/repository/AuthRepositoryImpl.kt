@@ -1,12 +1,17 @@
 package com.example.pruebatecnica.auth_feature.data.repository
 
 import android.content.Context
-import android.content.SharedPreferences
+import android.os.Build
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.pruebatecnica.auth_feature.domain.model.AuthCredentials
+import com.example.pruebatecnica.auth_feature.domain.model.AuthSession
 import com.example.pruebatecnica.auth_feature.domain.repository.AuthRepository
+import com.example.pruebatecnica.auth_feature.security.CryptoManager
+import com.example.pruebatecnica.auth_feature.security.JwtUtil.generateToken
+import com.example.pruebatecnica.auth_feature.security.JwtUtil.getAuthSession
 import com.example.pruebatecnica.core_feature.data.model.ResponseState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -14,6 +19,11 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.security.SecureRandom
+import java.util.Base64
 
 private val Context.sessionStore by preferencesDataStore(name = "token_session")
 
@@ -24,10 +34,28 @@ class AuthRepositoryImpl (
 
     private val sessionStore = context.sessionStore
     private val SESSION_KEY = stringPreferencesKey("session")
+    private val sharedPreferences = context.getSharedPreferences("my_preferences", Context.MODE_PRIVATE)
 
+    private val cryptoManager = CryptoManager()
+
+    init {
+        getPrivateKey()
+    }
 
     override suspend fun signIn(credentials: AuthCredentials): ResponseState<Unit> = try {
-        firebaseAuth.signInWithEmailAndPassword(credentials.email,credentials.password).await()
+        val response = firebaseAuth
+            .signInWithEmailAndPassword(credentials.email,credentials.password)
+            .await()
+
+        val claims= mapOf(
+            "email" to response.user!!.email!!,
+            "isAuthenticated" to "1"
+        )
+
+        val newToken=generateToken(claims = claims, username = credentials.email,getPrivateKey())
+
+        saveToken(newToken)
+
         ResponseState.Success(Unit)
     }catch (e:FirebaseAuthInvalidCredentialsException){
         ResponseState.Error("Not valid credentials",401 )
@@ -44,9 +72,16 @@ class AuthRepositoryImpl (
         }
     }
 
-    override val token: Flow<String?> = sessionStore.data
+    override val token: Flow<AuthSession?> = sessionStore.data
     .map { preferences->
-        preferences[SESSION_KEY]
+        var authState:AuthSession?=null
+        preferences[SESSION_KEY]?.let {
+            val data=getAuthSession(it,getPrivateKey())
+            data?.let { session->
+                authState= AuthSession(email = session.email,session.isAuthenticated)
+            }
+        }
+        authState
     }
 
     override suspend fun saveToken(token: String) {
@@ -58,6 +93,42 @@ class AuthRepositoryImpl (
     override suspend fun signOut() {
         sessionStore.edit { preferences ->
             preferences.remove(SESSION_KEY)
+        }
+    }
+
+    private fun getPrivateKey(): String {
+        val file = File(context.filesDir, "secret.txt")
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+        FileInputStream(file).use { fis ->
+            val secretKey = sharedPreferences.getString("SECRET_KEY", null)
+            if (secretKey == null) {
+                val generatedKey = generateSecretKey()
+                val keyBytes = generatedKey.encodeToByteArray()
+                FileOutputStream(file).use { fos ->
+                    val encryptedKey = cryptoManager.encrypt(bytes = keyBytes, outputStream = fos)
+                    sharedPreferences.edit().putString("SECRET_KEY", encryptedKey.toString()).apply()
+                }
+                return cryptoManager.decrypt(inputStream = fis).decodeToString()
+            } else {
+                // Si la clave ya existe en SharedPreferences, simplemente la desciframos
+                return cryptoManager.decrypt(inputStream = fis).decodeToString()
+            }
+        }
+    }
+
+    private fun generateSecretKey(): String {
+        val keyLength = 32
+        val random = SecureRandom()
+
+        val keyBytes = ByteArray(keyLength)
+        random.nextBytes(keyBytes)
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Base64.getEncoder().encodeToString(keyBytes)
+        } else {
+            android.util.Base64.encodeToString(keyBytes, android.util.Base64.NO_WRAP)
         }
     }
 }
