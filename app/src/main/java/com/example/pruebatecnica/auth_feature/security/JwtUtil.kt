@@ -24,8 +24,8 @@ object JwtUtil {
         val claims= getClaims(token = token, secretKey = secretKey)
         return if (claims!=null){
             val email=claims.get("email",String::class.java)
-            val isAuthenticated=claims.get("authenticated",String::class.java).toInt()
-            val authSession=AuthSession(email = email, isAuthenticated = isAuthenticated)
+            val fingerprint=claims.get("fingerprint",String::class.java).toInt()
+            val authSession=AuthSession(email = email, fingerprint = fingerprint)
             authSession
         } else null
     }

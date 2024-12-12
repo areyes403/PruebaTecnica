@@ -103,6 +103,9 @@ dependencies {
 
     implementation ("androidx.biometric:biometric:1.1.0")
 
+    //GSM services
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
+
 
 
 

@@ -3,20 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/splashFragment">
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.pruebatecnica.auth_feature.presenter.login.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_splashFragment"
+            app:destination="@id/splashFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out" />
+    </fragment>
 
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.example.pruebatecnica.organization_feature.presenter.splash.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash" >
-        <action
-            android:id="@+id/action_splashFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:enterAnim="@anim/slide_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+
         <action
             android:id="@+id/action_splashFragment_to_organizationsFragment"
             app:destination="@id/organizationsFragment"
@@ -25,11 +33,7 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out"/>
     </fragment>
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.example.pruebatecnica.auth_feature.presenter.login.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+
     <fragment
         android:id="@+id/organizationsFragment"
         android:name="com.example.pruebatecnica.organization_feature.presenter.organizations.OrganizationsFragment"

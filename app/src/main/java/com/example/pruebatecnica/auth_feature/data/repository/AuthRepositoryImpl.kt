@@ -16,9 +16,14 @@ import com.example.pruebatecnica.core_feature.data.model.ResponseState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -38,27 +43,41 @@ class AuthRepositoryImpl (
 
     private val cryptoManager = CryptoManager()
 
-    init {
-        getPrivateKey()
-    }
-
     override suspend fun signIn(credentials: AuthCredentials): ResponseState<Unit> = try {
-        val response = firebaseAuth
-            .signInWithEmailAndPassword(credentials.email,credentials.password)
-            .await()
-
-        val claims= mapOf(
-            "email" to response.user!!.email!!,
-            "isAuthenticated" to "1"
-        )
-
-        val newToken=generateToken(claims = claims, username = credentials.email,getPrivateKey())
-
-        saveToken(newToken)
-
-        ResponseState.Success(Unit)
-    }catch (e:FirebaseAuthInvalidCredentialsException){
-        ResponseState.Error("Not valid credentials",401 )
+        if (credentials.email.isBlank()&&credentials.password.isBlank()&&credentials.fcmToken==null){
+            throw IllegalArgumentException("Invalid credentials")
+        }
+        withTimeoutOrNull(5000) {
+            delay(8000)
+            if (credentials.fcmToken==null){
+                val response = firebaseAuth
+                    .signInWithEmailAndPassword(credentials.email, credentials.password)
+                    .await()
+                val claims = mapOf(
+                    "email" to response.user!!.email!!,
+                    "fingerprint" to "1",
+                )
+                val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
+                saveToken(newToken)
+            }else{
+                val response = firebaseAuth
+                    .signInWithCredential(GoogleAuthProvider.getCredential(credentials.fcmToken, null))
+                    .await()
+                val claims = mapOf(
+                    "email" to response.user!!.email!!,
+                    "fingerprint" to "1"
+                )
+                val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
+                saveToken(newToken)
+            }
+            ResponseState.Success(Unit)
+        } ?: ResponseState.Error("Request timed out", 408)
+    } catch (e: FirebaseAuthInvalidCredentialsException) {
+        ResponseState.Error("Not valid credentials", 401)
+    } catch (e: IllegalArgumentException) {
+        ResponseState.Error(e.message, 401)
+    } catch (e: Exception) {
+        ResponseState.Error(e.message, 500)
     }
 
     override suspend fun signUp(credentials: AuthCredentials) {
@@ -78,7 +97,7 @@ class AuthRepositoryImpl (
         preferences[SESSION_KEY]?.let {
             val data=getAuthSession(it,getPrivateKey())
             data?.let { session->
-                authState= AuthSession(email = session.email,session.isAuthenticated)
+                authState= AuthSession(email = session.email,session.fingerprint)
             }
         }
         authState
