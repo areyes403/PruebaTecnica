@@ -48,7 +48,6 @@ class AuthRepositoryImpl (
             throw IllegalArgumentException("Invalid credentials")
         }
         withTimeoutOrNull(5000) {
-            delay(8000)
             if (credentials.fcmToken==null){
                 val response = firebaseAuth
                     .signInWithEmailAndPassword(credentials.email, credentials.password)

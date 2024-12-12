@@ -1,71 +1,41 @@
 {
   "project_info": {
-    "project_number": "485087445512",
-    "firebase_url": "https://transportepersonaltp-64477-default-rtdb.firebaseio.com",
-    "project_id": "transportepersonaltp-64477",
-    "storage_bucket": "transportepersonaltp-64477.firebasestorage.app"
+    "project_number": "292059335692",
+    "project_id": "pruebatecnica-a581e",
+    "storage_bucket": "pruebatecnica-a581e.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:485087445512:android:f47926ff7d54cd5163c7bd",
+        "mobilesdk_app_id": "1:292059335692:android:09787181af73f95491b229",
         "android_client_info": {
           "package_name": "com.example.pruebatecnica"
         }
       },
       "oauth_client": [
         {
-          "client_id": "485087445512-e7qmffofvrba436jco1ak7ri18hk4o3c.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBYzW3r5W1cN-ZlzmY0mWTvhZbLk-WMat8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "485087445512-e7qmffofvrba436jco1ak7ri18hk4o3c.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:485087445512:android:ff8e8ac72d7cbd3863c7bd",
-        "android_client_info": {
-          "package_name": "stg.talentpower.usa.app.talentpowerandroid"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "485087445512-vfqps496k266bb6aai2v7ggpck4rtkgu.apps.googleusercontent.com",
+          "client_id": "292059335692-3kkvoi6q5udl4efo0qleumsg9419s6ia.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "stg.talentpower.usa.app.talentpowerandroid",
-            "certificate_hash": "2d901496031350d6d7dc8203fabd7833a288ba5d"
+            "package_name": "com.example.pruebatecnica",
+            "certificate_hash": "204a20dad24ab42ac8c59a6ccfdb013a78d8d132"
           }
         },
         {
-          "client_id": "485087445512-e7qmffofvrba436jco1ak7ri18hk4o3c.apps.googleusercontent.com",
+          "client_id": "292059335692-akasvjb32687ntsfd7s1ot364btfe6le.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBYzW3r5W1cN-ZlzmY0mWTvhZbLk-WMat8"
+          "current_key": "AIzaSyBBtNCcEA0-4buLPXmRF9K2MBIArhOQ-6U"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "485087445512-e7qmffofvrba436jco1ak7ri18hk4o3c.apps.googleusercontent.com",
+              "client_id": "292059335692-akasvjb32687ntsfd7s1ot364btfe6le.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
