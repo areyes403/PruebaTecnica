@@ -20,8 +20,8 @@ class SplashViewModel @Inject constructor(
     private val getOrganizationsDataUseCase: GetOrganizationsData
 ):BaseViewModel() {
 
-    private val _getData= MutableLiveData<ResponseState<OrganizationData>>()
-    val getData: LiveData<ResponseState<OrganizationData>> get() = _getData
+    private val _getData= MutableLiveData<ResponseState<Unit>>()
+    val getData: LiveData<ResponseState<Unit>> get() = _getData
 
     init {
         downloadData()

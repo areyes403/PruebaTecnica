@@ -26,5 +26,24 @@ class OrganizationRepositoryImpl(
         organizationDao.insertAll(organizations = organizations.toOrganizationEntities())
     }
 
-    override suspend fun findPaginatedOrganizations(offset: Int): List<OrganizationEntity> = organizationDao.getListPaged(offset=offset)
+    override suspend fun checkDataCount(): Int = organizationDao.getTotalCount()
+
+    override suspend fun insertOrganization(organization: OrganizationEntity) = organizationDao.insert(organization = organization)
+
+    override suspend fun findPaginatedOrganizations(offset: Int): List<Organization> = organizationDao.getListPaged(offset=offset)
+        .map {
+            Organization(
+                id=it.id,
+                dateInsert=it.dateInsert,
+                slug=it.slug,
+                columns=it.columns,
+                fact=it.fact,
+                organization=it.organization,
+                resource=it.resource,
+                url=it.url,
+                operations=it.operations,
+                dataset=it.dataset,
+                createdAt =it.createdAt,
+            )
+        }
 }

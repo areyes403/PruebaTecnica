@@ -13,5 +13,6 @@ data class OrganizationExpandable (
     val operations: String,
     val dataset: String,
     val createdAt: String,
-    var isExpanded:Boolean=false
+    var isExpanded:Boolean=false,
+    var isFiltering:Boolean=false
 )

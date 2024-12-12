@@ -9,5 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface OrganizationRepository {
     suspend fun getData():ResponseState<OrganizationData>
     suspend fun insertOrganizations(organizations:List<Organization>)
-    suspend fun findPaginatedOrganizations(offset: Int): List<OrganizationEntity>
+    suspend fun findPaginatedOrganizations(offset: Int): List<Organization>
+    suspend fun insertOrganization(organization:OrganizationEntity)
+    suspend fun checkDataCount():Int
 }

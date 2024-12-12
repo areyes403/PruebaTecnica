@@ -11,6 +11,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface OrganizationDao {
+    @Query("SELECT COUNT(*) FROM OrganizationEntity")
+    suspend fun getTotalCount(): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(organization: OrganizationEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(organizations:List<OrganizationEntity>)
 
