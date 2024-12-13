@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.pruebatecnica.auth_feature.data.model.RegisterUser
 import com.example.pruebatecnica.auth_feature.domain.model.AuthCredentials
 import com.example.pruebatecnica.auth_feature.domain.model.AuthSession
 import com.example.pruebatecnica.auth_feature.domain.repository.AuthRepository
@@ -44,33 +45,28 @@ class AuthRepositoryImpl (
     private val cryptoManager = CryptoManager()
 
     override suspend fun signIn(credentials: AuthCredentials): ResponseState<Unit> = try {
-        if (credentials.email.isBlank()&&credentials.password.isBlank()&&credentials.fcmToken==null){
-            throw IllegalArgumentException("Invalid credentials")
+        if (credentials.fcmToken==null){
+            val response = firebaseAuth
+                .signInWithEmailAndPassword(credentials.email, credentials.password)
+                .await()
+            val claims = mapOf(
+                "email" to response.user!!.email!!,
+                "fingerprint" to credentials.fingerprint.toString(),
+            )
+            val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
+            saveToken(newToken)
+        }else{
+            val response = firebaseAuth
+                .signInWithCredential(GoogleAuthProvider.getCredential(credentials.fcmToken, null))
+                .await()
+            val claims = mapOf(
+                "email" to response.user!!.email!!,
+                "fingerprint" to "1"
+            )
+            val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
+            saveToken(newToken)
         }
-        withTimeoutOrNull(5000) {
-            if (credentials.fcmToken==null){
-                val response = firebaseAuth
-                    .signInWithEmailAndPassword(credentials.email, credentials.password)
-                    .await()
-                val claims = mapOf(
-                    "email" to response.user!!.email!!,
-                    "fingerprint" to credentials.fingerprint.toString(),
-                )
-                val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
-                saveToken(newToken)
-            }else{
-                val response = firebaseAuth
-                    .signInWithCredential(GoogleAuthProvider.getCredential(credentials.fcmToken, null))
-                    .await()
-                val claims = mapOf(
-                    "email" to response.user!!.email!!,
-                    "fingerprint" to "1"
-                )
-                val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
-                saveToken(newToken)
-            }
-            ResponseState.Success(Unit)
-        } ?: ResponseState.Error("Request timed out", 408)
+        ResponseState.Success(Unit)
     } catch (e: FirebaseAuthInvalidCredentialsException) {
         ResponseState.Error("Not valid credentials", 401)
     } catch (e: IllegalArgumentException) {
@@ -79,15 +75,11 @@ class AuthRepositoryImpl (
         ResponseState.Error(e.message, 500)
     }
 
-    override suspend fun signUp(credentials: AuthCredentials) {
-        try {
-            firebaseAuth.createUserWithEmailAndPassword(credentials.email,credentials.password).await()
-        }catch (e: FirebaseAuthUserCollisionException){
-            e.printStackTrace()
-        }
-        catch (e: FirebaseAuthInvalidCredentialsException){
-            e.printStackTrace()
-        }
+    override suspend fun signUp(credentials: RegisterUser):ResponseState<Unit> = try {
+        firebaseAuth.createUserWithEmailAndPassword(credentials.email,credentials.pass).await()
+        ResponseState.Success(Unit)
+    }catch (e: FirebaseAuthUserCollisionException){
+        ResponseState.Error("The email address is already in use by another account.",null)
     }
 
     override val token: Flow<AuthSession?> = sessionStore.data

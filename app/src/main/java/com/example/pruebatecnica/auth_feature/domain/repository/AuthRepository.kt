@@ -1,5 +1,6 @@
 package com.example.pruebatecnica.auth_feature.domain.repository
 
+import com.example.pruebatecnica.auth_feature.data.model.RegisterUser
 import com.example.pruebatecnica.auth_feature.domain.model.AuthCredentials
 import com.example.pruebatecnica.auth_feature.domain.model.AuthSession
 import com.example.pruebatecnica.core_feature.data.model.ResponseState
@@ -7,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun signIn(credentials:AuthCredentials):ResponseState<Unit>
-    suspend fun signUp(credentials: AuthCredentials)
+    suspend fun signUp(credentials: RegisterUser):ResponseState<Unit>
 
     val token: Flow<AuthSession?>
     suspend fun saveToken(token:String)

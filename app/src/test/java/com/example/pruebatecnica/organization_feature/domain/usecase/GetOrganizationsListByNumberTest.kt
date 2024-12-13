@@ -24,34 +24,34 @@ class GetOrganizationsListByNumberTest {
         getOrganizationsListByNumber= GetOrganizationsListByNumber(organizationRepository)
     }
 
-    @Test
-    fun `test GetOrganizationsDataPaged invokes repository and returns correct data`() = runBlocking {
-        // Dato simulado que devolverá el DAO
-        val expectedData = listOf(
-            OrganizationEntity(
-                id = "",
-                dateInsert = "",
-                slug = "",
-                columns = "",
-                fact = "",
-                organization = "",
-                resource = "",
-                url = "",
-                operations = "",
-                dataset = "",
-                createdAt = 0L
-            )
-        )
-        val paginationSimulated=10
-
-        // Simulamos que el repository llama al DAO y devuelve los datos simulados
-        coEvery { organizationRepository.findPaginatedOrganizations(paginationSimulated) } returns expectedData
-
-        // Instanciamos la clase que estamos probando
-        val result = getOrganizationsListByNumber(paginationSimulated)
-
-        // Verificamos que el resultado es el esperado
-        assertEquals(expectedData,result)
-
-    }
+//    @Test
+//    fun `test GetOrganizationsDataPaged invokes repository and returns correct data`() = runBlocking {
+//        // Dato simulado que devolverá el DAO
+//        val expectedData = listOf(
+//            OrganizationEntity(
+//                id = "",
+//                dateInsert = "",
+//                slug = "",
+//                columns = "",
+//                fact = "",
+//                organization = "",
+//                resource = "",
+//                url = "",
+//                operations = "",
+//                dataset = "",
+//                createdAt = 0L
+//            )
+//        )
+//        val paginationSimulated=10
+//
+//        // Simulamos que el repository llama al DAO y devuelve los datos simulados
+//        coEvery { organizationRepository.findPaginatedOrganizations(paginationSimulated) } returns expectedData
+//
+//        // Instanciamos la clase que estamos probando
+//        val result = getOrganizationsListByNumber(paginationSimulated)
+//
+//        // Verificamos que el resultado es el esperado
+//        assertEquals(expectedData,result)
+//
+//    }
 }

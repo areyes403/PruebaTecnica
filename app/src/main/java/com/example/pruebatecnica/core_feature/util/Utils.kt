@@ -1,9 +1,11 @@
 package com.example.pruebatecnica.core_feature.util
 
+import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.regex.Pattern.compile
 
 class Utils {
     companion object{
@@ -24,6 +26,38 @@ class Utils {
             format.timeZone = TimeZone.getTimeZone("UTC")
             val date = format.parse(date)
             return date.time
+        }
+        fun isValidEmail(email: String): Boolean {
+            val emailRegex = compile(
+                "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                        "\\@" +
+                        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                        "(" +
+                        "\\." +
+                        "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                        ")+"
+            )
+            return emailRegex.matcher(email).matches()
+        }
+
+        fun isValidPassword(password: String): Boolean {
+            if (password.length < 8) return false
+            if (password.filter { it.isDigit() }.firstOrNull() == null) return false
+            if (password.filter { it.isLetter() }.filter { it.isUpperCase() }.firstOrNull() == null) return false
+            if (password.filter { it.isLetter() }.filter { it.isLowerCase() }.firstOrNull() == null) return false
+            if (password.filter { !it.isLetterOrDigit() }.firstOrNull() == null) return false
+
+            return true
+        }
+
+        fun validateField(field: TextInputLayout, validator: (String) -> Boolean, errorMessage: String): Boolean {
+            val input = field.editText!!.text.toString()
+            return if (validator(input)) {
+                true
+            } else {
+                field.editText!!.error = errorMessage
+                false
+            }
         }
     }
 

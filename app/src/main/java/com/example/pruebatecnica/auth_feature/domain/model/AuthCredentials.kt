@@ -4,5 +4,5 @@ data class AuthCredentials(
     val email:String,
     val password:String,
     val fcmToken:String?,
-    val fingerprint:Int=0
+    var fingerprint:Int=0
 )

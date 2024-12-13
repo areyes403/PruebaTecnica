@@ -2,6 +2,7 @@ package com.example.pruebatecnica.auth_feature.presenter.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +12,20 @@ import androidx.navigation.fragment.findNavController
 import com.example.pruebatecnica.R
 import com.example.pruebatecnica.auth_feature.domain.model.AuthCredentials
 import com.example.pruebatecnica.core_feature.data.model.ResponseState
+import com.example.pruebatecnica.core_feature.util.Utils.Companion.isValidEmail
+import com.example.pruebatecnica.core_feature.util.Utils.Companion.isValidPassword
+import com.example.pruebatecnica.core_feature.util.Utils.Companion.validateField
 import com.example.pruebatecnica.core_feature.util.disable
+import com.example.pruebatecnica.core_feature.util.invisible
 import com.example.pruebatecnica.core_feature.util.isBiometricHardWareAvailable
+import com.example.pruebatecnica.core_feature.util.show
 import com.example.pruebatecnica.core_feature.util.snackBar
 import com.example.pruebatecnica.core_feature.util.takeIfError
 import com.example.pruebatecnica.databinding.FragmentLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,10 +51,24 @@ class LoginFragment : Fragment() {
             if(!isBiometricHardWareAvailable()){
                 cbFingerprint.disable()
             }
-            button.setOnClickListener {
-
+            txtRegister.setOnClickListener {
+                findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
             }
-
+            btnLogin.setOnClickListener {
+                val validEmail = validateField(tfEmailLogin,::isValidEmail, "Set valid email")
+                val validPassword = validateField(tfPasswordLogin,::isValidPassword, "Password must be at least 8 characters long, contain one digit, and one uppercase letter.")
+                if (!validEmail || !validPassword){
+                    return@setOnClickListener
+                }
+                btnLogin.invisible()
+                val credentialsData=AuthCredentials(
+                    email = tfEmailLogin.editText!!.text.toString(),
+                    password = tfPasswordLogin.editText!!.text.toString(),
+                    fcmToken = null,
+                    fingerprint = if (binding.cbFingerprint.isChecked) 1 else 0
+                )
+                viewModel.login(credentials = credentialsData)
+            }
             cardGoogleRegister.setOnClickListener {
                 signInGoogle()
             }
@@ -61,6 +82,9 @@ class LoginFragment : Fragment() {
 
                 }
                 is ResponseState.Error->{
+                    binding.apply {
+                        btnLogin.show()
+                    }
                     snackBar(response.msg)
                 }
             }
@@ -90,10 +114,12 @@ class LoginFragment : Fragment() {
                             email = "",
                             password = "",
                             fcmToken = it,
-                            fingerprint = if (binding.cbFingerprint.isChecked) 1 else 0
+                            fingerprint = 0
                         )
-                        viewModel.login(credentials = credentials)
-                    } ?: snackBar("Error al obtener sus credenciales")
+                        if(isBiometricHardWareAvailable()){
+                            showDialog(credentials = credentials)
+                        }
+                    } ?: snackBar( "Error al obtener sus credenciales")
                 }
             } catch (e: ApiException) {
                 println(e.localizedMessage)
@@ -101,6 +127,26 @@ class LoginFragment : Fragment() {
                 snackBar("Error al obtener sus credenciales")
             }
         }
+    }
+
+    private fun showDialog(credentials:AuthCredentials){
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Enable fingerprint")
+            .setMessage("Do you want to enable fingerprint?")
+            .setIcon(R.drawable.ic_fingerprint_24)
+            .setNeutralButton("Cancel") { dialog, which ->
+                viewModel.login(credentials = credentials)
+            }
+            .setNegativeButton("Decline") { dialog, which ->
+                viewModel.login(credentials = credentials)
+            }
+            .setPositiveButton("Accept") { dialog, which ->
+                credentials.fingerprint=1
+                viewModel.login(credentials = credentials)
+            }.setOnCancelListener {
+                viewModel.login(credentials = credentials)
+            }
+            .show()
     }
 
     override fun onDestroyView() {
