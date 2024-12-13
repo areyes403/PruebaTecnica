@@ -54,7 +54,7 @@ class AuthRepositoryImpl (
                     .await()
                 val claims = mapOf(
                     "email" to response.user!!.email!!,
-                    "fingerprint" to "1",
+                    "fingerprint" to credentials.fingerprint.toString(),
                 )
                 val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
                 saveToken(newToken)

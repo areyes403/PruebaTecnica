@@ -44,6 +44,20 @@ fun Organization.toOrganizationEntity() = OrganizationEntity(
     createdAt = createdAt
 )
 
+fun OrganizationExpandable.toOrganization() = Organization(
+    id = id,
+    dateInsert=dateInsert,
+    slug = slug,
+    columns = columns,
+    fact = fact,
+    organization = organization,
+    resource = resource,
+    url = resource,
+    operations = operations,
+    dataset = dataset,
+    createdAt = Utils.convertDateToDouble(createdAt)
+)
+
 fun OrganizationEntity.toOrganization() = Organization(
     id = id,
     dateInsert=dateInsert,

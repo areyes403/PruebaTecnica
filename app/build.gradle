@@ -49,6 +49,7 @@ dependencies {
     implementation libs.androidx.constraintlayout
     implementation libs.androidx.legacy.support.v4
     implementation libs.androidx.fragment.ktx
+    implementation libs.play.services.location
     //implementation libs.androidx.security.crypto
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
@@ -106,9 +107,8 @@ dependencies {
     //GSM services
     implementation 'com.google.android.gms:play-services-auth:21.2.0'
 
-
-
-
+    //lottieAnimation
+    implementation 'com.airbnb.android:lottie:6.3.0'
 }
 
 kapt {

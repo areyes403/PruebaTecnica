@@ -11,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.pruebatecnica.R
 import com.example.pruebatecnica.auth_feature.domain.model.AuthCredentials
 import com.example.pruebatecnica.core_feature.data.model.ResponseState
+import com.example.pruebatecnica.core_feature.util.disable
+import com.example.pruebatecnica.core_feature.util.isBiometricHardWareAvailable
 import com.example.pruebatecnica.core_feature.util.snackBar
 import com.example.pruebatecnica.core_feature.util.takeIfError
 import com.example.pruebatecnica.databinding.FragmentLoginBinding
@@ -39,6 +41,13 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
+            if(!isBiometricHardWareAvailable()){
+                cbFingerprint.disable()
+            }
+            button.setOnClickListener {
+
+            }
+
             cardGoogleRegister.setOnClickListener {
                 signInGoogle()
             }
@@ -57,15 +66,15 @@ class LoginFragment : Fragment() {
             }
         }
     }
+
     private fun signInGoogle(){
-        findNavController().navigate(R.id.action_loginFragment_to_splashFragment)
-//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//            .requestIdToken(getString(R.string.default_web_client_id))
-//            .requestEmail()
-//            .build()
-//        val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-//        val signInIntent: Intent = googleSignInClient.signInIntent
-//        startActivityForResult(signInIntent, RC_SIGN_IN)
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+        val signInIntent: Intent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -80,7 +89,8 @@ class LoginFragment : Fragment() {
                         val credentials=AuthCredentials(
                             email = "",
                             password = "",
-                            fcmToken = it
+                            fcmToken = it,
+                            fingerprint = if (binding.cbFingerprint.isChecked) 1 else 0
                         )
                         viewModel.login(credentials = credentials)
                     } ?: snackBar("Error al obtener sus credenciales")

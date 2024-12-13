@@ -3,6 +3,7 @@ package com.example.pruebatecnica.core_feature.util
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class Utils {
     companion object{
@@ -15,8 +16,14 @@ class Utils {
             val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
             val targetFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-            val date = originalFormat.parse(inputDate)  // Convierte la cadena a un objeto Date
-            return targetFormat.format(date)  // Devuelve solo la parte de la fecha en formato deseado
+            val date = originalFormat.parse(inputDate)
+            return targetFormat.format(date)
+        }
+        fun convertDateToDouble(date:String):Long {
+            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            format.timeZone = TimeZone.getTimeZone("UTC")
+            val date = format.parse(date)
+            return date.time
         }
     }
 

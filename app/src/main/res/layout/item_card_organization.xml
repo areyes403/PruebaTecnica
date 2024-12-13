@@ -140,20 +140,30 @@
             android:id="@+id/txtDateInsert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="date"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
+            android:text="date"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtUrl" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/expandableContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            app:constraint_referenced_ids="dividerId,txtSlug,txtId,txtDateInsert,txtDataset,txtColumns,txtResource,txtUrl,txtOperations"/>
+            android:visibility="visible"
+            app:constraint_referenced_ids="imgShare,dividerId,txtSlug,txtId,txtDateInsert,txtDataset,txtColumns,txtResource,txtUrl,txtOperations"/>
 
+        <ImageView
+            android:id="@+id/imgShare"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_share_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtUrl" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
