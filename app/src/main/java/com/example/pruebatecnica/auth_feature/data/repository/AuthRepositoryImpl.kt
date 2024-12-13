@@ -52,6 +52,7 @@ class AuthRepositoryImpl (
             val claims = mapOf(
                 "email" to response.user!!.email!!,
                 "fingerprint" to credentials.fingerprint.toString(),
+                "authToken" to ""
             )
             val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
             saveToken(newToken)
@@ -61,7 +62,8 @@ class AuthRepositoryImpl (
                 .await()
             val claims = mapOf(
                 "email" to response.user!!.email!!,
-                "fingerprint" to "1"
+                "fingerprint" to credentials.fingerprint.toString(),
+                "authToken" to ""
             )
             val newToken = generateToken(claims = claims, username = credentials.email, getPrivateKey())
             saveToken(newToken)
@@ -88,7 +90,10 @@ class AuthRepositoryImpl (
         preferences[SESSION_KEY]?.let {
             val data=getAuthSession(it,getPrivateKey())
             data?.let { session->
-                authState= AuthSession(email = session.email,session.fingerprint)
+                authState= AuthSession(
+                    email = session.email,
+                    fingerprint = session.fingerprint,
+                )
             }
         }
         authState

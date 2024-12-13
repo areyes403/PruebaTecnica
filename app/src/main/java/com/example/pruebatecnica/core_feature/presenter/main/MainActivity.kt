@@ -16,15 +16,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.pruebatecnica.R
-import com.example.pruebatecnica.auth_feature.security.CryptoManager
-import com.example.pruebatecnica.auth_feature.security.JwtUtil.getAuthSession
+import com.example.pruebatecnica.auth_feature.domain.model.AuthSession
 import com.example.pruebatecnica.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.util.concurrent.Executor
 
 @AndroidEntryPoint
@@ -36,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
+    private lateinit var session:AuthSession
 
     private val viewModel by viewModels<MainActivityViewModel>()
 
@@ -52,37 +49,50 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         executor = ContextCompat.getMainExecutor(this)
         biometricPrompt = BiometricPrompt(this, executor,callback)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val authFlag = DEVICE_CREDENTIAL or BIOMETRIC_STRONG
+            promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Authentication")
+                .setAllowedAuthenticators(authFlag)
+                .build()
+        } else {
+            promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle(title)
+                .setDeviceCredentialAllowed(true)
+                .build()
+        }
 
         val navHost= supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         navController = navHost.navController
-        observers()
+
+        if (savedInstanceState != null) {
+            navController.setGraph(R.navigation.nav_graph, savedInstanceState)
+        } else {
+            navController.setGraph(R.navigation.nav_graph)
+        }
+        observers(firstSession = savedInstanceState == null)
     }
 
-    private fun observers() {
-        viewModel.tokenState.onEach { session->
+    private fun observers(firstSession: Boolean) {
+        viewModel.sessionState.onEach { session->
             if (session==null){
-                Log.i(TAG,"Token: $")
-
+                Log.i(TAG,"Not session")
             }else{
-                Log.i(TAG,"Session: $session")
-                if (session.fingerprint==1){
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        val authFlag = DEVICE_CREDENTIAL or BIOMETRIC_STRONG
-                        promptInfo = BiometricPrompt.PromptInfo.Builder()
-                            .setTitle("Authentication")
-                            .setAllowedAuthenticators(authFlag)
-                            .build()
-                    } else {
-                        promptInfo = BiometricPrompt.PromptInfo.Builder()
-                            .setTitle(title)
-                            .setDeviceCredentialAllowed(true)
-                            .build()
+                this.session=session
+                if (firstSession){
+                    if (session.fingerprint==1){
+                        biometricPrompt.authenticate(promptInfo)
                     }
-                    biometricPrompt.authenticate(promptInfo)
-                }else{
+                }
+            }
+        }.launchIn(lifecycleScope)
+
+        viewModel.token.onEach{ authToken->
+            authToken?.let {
+                println(authToken)
+                if (firstSession){
                     navController.navigate(R.id.action_loginFragment_to_splashFragment)
                 }
             }
@@ -102,7 +112,8 @@ class MainActivity : AppCompatActivity() {
             result: BiometricPrompt.AuthenticationResult
         ) {
             super.onAuthenticationSucceeded(result)
-            navController.navigate(R.id.action_loginFragment_to_splashFragment)
+            Log.i(TAG,"onAuthenticationSucceeded")
+            viewModel.authenticated()
 
         }
 
@@ -111,4 +122,5 @@ class MainActivity : AppCompatActivity() {
             Log.i(TAG,"onAuthenticationFailed")
         }
     }
+
 }
