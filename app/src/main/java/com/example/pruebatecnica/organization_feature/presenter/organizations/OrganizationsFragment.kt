@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -117,9 +118,11 @@ class OrganizationsFragment : Fragment(),OnClickListener {
                     val query = editable.toString().trim()
                     val tempList=filteredList
                     filteredList = if (query.isEmpty()) {
-                        tempList.map { org->
-                            org.copy(isFiltering = true)
-                        }
+//
+//                        tempList.map { org->
+//                            org.copy(isFiltering = true)
+//                        }
+                        viewModel.data.value!!
                     } else {
                         val filtered=tempList.filter {
                             it.organization.contains(query,ignoreCase = true)
@@ -145,8 +148,8 @@ class OrganizationsFragment : Fragment(),OnClickListener {
 
     private fun observers(){
         viewModel.data.observe(viewLifecycleOwner){ list->
-            filteredList=list
-            adapter.submitList(filteredList)
+            //filteredList=list
+            adapter.submitList(list)
         }
         viewModel.pager.observe(viewLifecycleOwner){pager->
             viewModel.searchData(pager.currentPage)
